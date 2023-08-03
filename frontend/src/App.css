@@ -1,0 +1,30 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter+Tight:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;1,100;1,200;1,300;1,400;1,500;1,600&family=Work+Sans:wght@300&display=swap');
+
+.App{
+  min-height: 100vh;
+  display:flex;
+  background-image: url("./chat.jpg");
+  background-size: cover;
+  background-position: center;
+  color:black;
+ 
+}
+::-webkit-scrollbar{
+  width: 0px;
+}
+::-webkit-scrollbar-thumb{
+  background: rgba(136,136,136,0.281);
+}
+
+::-webkit-scrollbar-thumb:hover{
+  background: #555;
+}
+
+#notificationIcon{
+    border-radius: 20px;
+    background-color: red;
+    height: 8px;
+    width: 8px;
+    margin-left: 20px;
+    margin-bottom: -10px;
+}

@@ -1,0 +1,15 @@
+#notificationIcon{
+    border-radius: 20px;
+    background-color: red;
+    height: 8px;
+    width: 8px;
+    margin-left: 20px;
+    margin-bottom: -10px;
+}
+
+.messages{
+    display: flex;
+    flex-direction: column;
+    overflow-y: scroll;
+    scrollbar-width: none;
+}
