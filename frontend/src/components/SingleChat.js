@@ -20,7 +20,7 @@ import io from "socket.io-client";
 // import Lottie from "react-lottie";
 // import animationData from "../animations/typing.json";
 
-const ENDPOINT = "http://localhost:500";
+const ENDPOINT = "https://chat-talk-flry.onrender.com";
 var socket, selectedChatCompare;
 
 const SingleChat = ({ fetchAgain, setFetchAgain }) => {
