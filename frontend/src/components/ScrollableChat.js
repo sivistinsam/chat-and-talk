@@ -9,6 +9,9 @@ import {
 import { Avatar } from "@chakra-ui/avatar";
 import { Tooltip } from "@chakra-ui/tooltip";
 import { ChatState } from "../Context/ChatProvider";
+
+
+// This function will make the chats scrollable
 const ScrollableChat = ({ messages }) => {
   const { user } = ChatState();
   return (
