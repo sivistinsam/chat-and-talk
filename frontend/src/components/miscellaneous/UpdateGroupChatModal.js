@@ -31,8 +31,10 @@ const UpdateGroupChatModal = ({ fetchMessages, fetchAgain, setFetchAgain }) => {
   const [renameloading, setRenameLoading] = useState(false);
   const toast = useToast();
 
+  // Accessing context data
   const { selectedChat, setSelectedChat, user } = ChatState();
 
+  // Handle searching users
   const handleSearch = async (query) => {
     setSearch(query);
     if (!query) {
@@ -63,6 +65,7 @@ const UpdateGroupChatModal = ({ fetchMessages, fetchAgain, setFetchAgain }) => {
     }
   };
 
+  // Handle renaming the group chat
   const handleRename = async () => {
     if (!groupChatName) return;
 
@@ -82,7 +85,6 @@ const UpdateGroupChatModal = ({ fetchMessages, fetchAgain, setFetchAgain }) => {
         config
       );
 
-      // setSelectedChat("");
       setSelectedChat(data);
       setFetchAgain(!fetchAgain);
       setRenameLoading(false);
@@ -100,7 +102,9 @@ const UpdateGroupChatModal = ({ fetchMessages, fetchAgain, setFetchAgain }) => {
     setGroupChatName("");
   };
 
+  // Handle adding a user to the group
   const handleAddUser = async (user1) => {
+    // Check if user is already in the group
     if (selectedChat.users.find((u) => u._id === user1._id)) {
       toast({
         title: "User Already in group!",
@@ -112,6 +116,7 @@ const UpdateGroupChatModal = ({ fetchMessages, fetchAgain, setFetchAgain }) => {
       return;
     }
 
+    // Check if the current user is the admin
     if (selectedChat.groupAdmin._id !== user._id) {
       toast({
         title: "Only admins can add someone!",
@@ -156,8 +161,13 @@ const UpdateGroupChatModal = ({ fetchMessages, fetchAgain, setFetchAgain }) => {
     setGroupChatName("");
   };
 
+  // Handle removing a user from the group
   const handleRemove = async (user1) => {
-    if (selectedChat.groupAdmin._id !== user._id && user1._id !== user._id) {
+    // Check if the user is an admin or the user themselves
+    if (
+      selectedChat.groupAdmin._id !== user._id &&
+      user1._id !== user._id
+    ) {
       toast({
         title: "Only admins can remove someone!",
         status: "error",
@@ -184,7 +194,11 @@ const UpdateGroupChatModal = ({ fetchMessages, fetchAgain, setFetchAgain }) => {
         config
       );
 
-      user1._id === user._id ? setSelectedChat() : setSelectedChat(data);
+      // Update selectedChat if user is removed
+      user1._id === user._id
+        ? setSelectedChat()
+        : setSelectedChat(data);
+
       setFetchAgain(!fetchAgain);
       fetchMessages();
       setLoading(false);
@@ -204,12 +218,14 @@ const UpdateGroupChatModal = ({ fetchMessages, fetchAgain, setFetchAgain }) => {
 
   return (
     <>
+      {/* Button to open the modal */}
       <IconButton
         display={{ base: "flex" }}
         icon={<ViewIcon />}
         onClick={onOpen}
       />
 
+      {/* Group Chat Update Modal */}
       <Modal onClose={onClose} isOpen={isOpen} isCentered>
         <ModalOverlay />
         <ModalContent>
@@ -224,6 +240,7 @@ const UpdateGroupChatModal = ({ fetchMessages, fetchAgain, setFetchAgain }) => {
 
           <ModalCloseButton />
           <ModalBody display="flex" flexDir="column" alignItems="center">
+            {/* Display group chat members */}
             <Box width="100%" display="flex" flexWrap="wrap" pb={3}>
               {selectedChat.users.map((u) => (
                 <UserBadgeItem
@@ -234,6 +251,8 @@ const UpdateGroupChatModal = ({ fetchMessages, fetchAgain, setFetchAgain }) => {
                 />
               ))}
             </Box>
+
+            {/* Input for renaming the group */}
             <FormControl display="flex">
               <Input
                 placeholder="Chat Name"
@@ -251,6 +270,8 @@ const UpdateGroupChatModal = ({ fetchMessages, fetchAgain, setFetchAgain }) => {
                 Update
               </Button>
             </FormControl>
+
+            {/* Input for adding user to the group */}
             <FormControl>
               <Input
                 placeholder="Add User to group"
@@ -259,6 +280,7 @@ const UpdateGroupChatModal = ({ fetchMessages, fetchAgain, setFetchAgain }) => {
               />
             </FormControl>
 
+            {/* Display search results */}
             {loading ? (
               <Spinner size="lg" />
             ) : (
@@ -272,6 +294,7 @@ const UpdateGroupChatModal = ({ fetchMessages, fetchAgain, setFetchAgain }) => {
             )}
           </ModalBody>
           <ModalFooter>
+            {/* Button to leave the group */}
             <Button onClick={() => handleRemove(user)} colorScheme="red">
               Leave Group
             </Button>
