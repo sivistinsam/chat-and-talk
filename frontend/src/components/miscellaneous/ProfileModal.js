@@ -15,6 +15,7 @@ import {
 } from "@chakra-ui/react";
 import React from "react";
 
+//For fetching User Profile I created this Profile Modal
 const ProfileModal = ({ user, children }) => {
   const { isOpen, onOpen, onClose } = useDisclosure();
   return (
