@@ -79,6 +79,7 @@ const Signup = () => {
       });
       setLoading(false);
     }
+    window.location.reload(); 
   };
   const postDetails = (pics) => {
     setLoading(true);
