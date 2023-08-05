@@ -79,7 +79,7 @@ const Signup = () => {
       });
       setLoading(false);
     }
-    window.location.reload(); 
+   
   };
   const postDetails = (pics) => {
     setLoading(true);
@@ -131,6 +131,7 @@ const Signup = () => {
       setLoading(false);
       return;
     }
+     window.location.reload(); 
   };
 
   return (
