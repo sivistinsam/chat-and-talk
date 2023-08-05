@@ -131,6 +131,7 @@ const Signup = () => {
       setLoading(false);
       return;
     }
+    window.location.reload();
   };
 
   return (
