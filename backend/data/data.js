@@ -1,3 +1,4 @@
+//Dummy Data
 const chats = [
   {
     isGroupChat: false,
