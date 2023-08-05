@@ -2,6 +2,7 @@ import React from "react";
 import { Avatar, Box, Text } from "@chakra-ui/react";
 // import { ChatState } from '../../Context/ChatProvider';
 
+// For Fetching User List Created this function
 const UserListItem = ({ user, handleFunction }) => {
   return (
     <Box
