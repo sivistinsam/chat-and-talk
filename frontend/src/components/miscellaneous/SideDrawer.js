@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import "../styles.css";
 import {
+  // Chakra UI components
   Box,
   Button,
   Text,
@@ -18,7 +19,11 @@ import {
   useToast,
 } from "@chakra-ui/react";
 import { Tooltip } from "@chakra-ui/tooltip";
-import { AddIcon, BellIcon, ChevronDownIcon } from "@chakra-ui/icons";
+import {
+  AddIcon,
+  BellIcon,
+  ChevronDownIcon,
+} from "@chakra-ui/icons";
 import { Avatar } from "@chakra-ui/avatar";
 import { ChatState } from "../../Context/ChatProvider";
 import ProfileModal from "./ProfileModal";
@@ -32,11 +37,14 @@ import { getSender } from "../../config/ChatLogics";
 import { FormControl } from "@chakra-ui/react";
 
 const SideDrawer = () => {
+  // State for search functionality
   const [search, setSearch] = useState("");
   const [searchReasult, setSearchResult] = useState([]);
   const [loading, setLoading] = useState(false);
   const [loadingChat, setLoadingChat] = useState(false);
-  const [visible,setVisible]=useState("notificationIcon")
+  const [visible, setVisible] = useState("notificationIcon");
+  
+  // Accessing context data
   const {
     user,
     setSelectedChat,
@@ -45,15 +53,22 @@ const SideDrawer = () => {
     notification,
     setNotification,
   } = ChatState();
+  
+  // Router history
   const history = useHistory();
 
+  // Chakra UI disclosure
   const { isOpen, onOpen, onClose } = useDisclosure();
 
+  // Logout functionality
   const logoutHandler = () => {
     localStorage.removeItem("userInfo");
     history.push("/");
   };
+
   const toast = useToast();
+
+  // Handle searching for users
   const handleSearchButton = async () => {
     if (!search) {
       toast({
@@ -90,6 +105,8 @@ const SideDrawer = () => {
       });
     }
   };
+
+  // Handle searching users on input change
   const handleSearch = async (query) => {
     setSearch(query);
     if (!query) {
@@ -103,9 +120,7 @@ const SideDrawer = () => {
         },
       };
       const { data } = await axios.get(`/api/user?search=${search}`, config);
-      //  console.log(data);
       setLoading(false);
-      //  setSelectedChat(data);
       setSearchResult(data);
     } catch (error) {
       toast({
@@ -118,6 +133,8 @@ const SideDrawer = () => {
       });
     }
   };
+
+  // Handle accessing a chat
   const accessChat = async (userId) => {
     try {
       setLoadingChat(true);
@@ -143,8 +160,10 @@ const SideDrawer = () => {
       });
     }
   };
+
   return (
     <>
+      {/* SideDrawer Header */}
       <Box
         display="flex"
         justifyContent="space-between"
@@ -154,6 +173,7 @@ const SideDrawer = () => {
         p="5px 10px 5px 10px"
         borderWidth="5px"
       >
+        {/* Search Button */}
         <Tooltip label="Search User to chat" hasArrow placement="bottom-end">
           <Button variant="ghost" onClick={onOpen}>
             <i className="fas fa-search"></i>
@@ -170,24 +190,21 @@ const SideDrawer = () => {
           </Button>
         </Tooltip>
 
+        {/* Chat & Talk Title */}
         <Text fontSize="2xl" fontFamily="Work sans">
           Chat & Talk
         </Text>
+
+        {/* User Avatar and Menu */}
         <div>
           <Menu>
             <MenuButton p={1}>
-              {/* <NotificationBadge
-                count={notification.length}
-                effect={Effect.SCALE}
-              /> */}
-              <div
-                id={notification.length>0?visible:""}
-                
-              ></div>
-              
+              {/* Notification Bell Icon */}
+              <div id={notification.length > 0 ? visible : ""}></div>
               <BellIcon fontSize="2xl" m={1} />
             </MenuButton>
 
+            {/* Notification Menu */}
             <MenuList pl={2}>
               {!notification.length && "No New Messages"}
               {notification.map((notif) => (
@@ -197,7 +214,7 @@ const SideDrawer = () => {
                   onClick={() => {
                     setSelectedChat(notif.chat);
                     setNotification(notification.filter((n) => n !== notif));
-                    setVisible("")
+                    setVisible("");
                   }}
                 >
                   {notif.chat.isGroupChat
@@ -207,6 +224,8 @@ const SideDrawer = () => {
               ))}
             </MenuList>
           </Menu>
+
+          {/* User Profile Menu */}
           <Menu>
             <MenuButton as={Button} rightIcon={<ChevronDownIcon />}>
               <Avatar
@@ -226,12 +245,15 @@ const SideDrawer = () => {
           </Menu>
         </div>
       </Box>
+
+      {/* Drawer for searching users */}
       <Drawer placement="left" onClose={onClose} isOpen={isOpen}>
         <DrawerOverlay />
         <DrawerContent>
           <DrawerHeader borderBottomWidth="1px">Search Users</DrawerHeader>
           <DrawerBody>
             <FormControl display="flex" pb={2}>
+              {/* Input for searching users */}
               <Input
                 placeholder="Search by name or email"
                 mr={2}
@@ -240,6 +262,8 @@ const SideDrawer = () => {
               />
               <Button onClick={handleSearchButton}>Go</Button>
             </FormControl>
+
+            {/* Display search results */}
             {loading ? (
               <ChatLoading />
             ) : Array.isArray(searchReasult) ? (
@@ -253,6 +277,8 @@ const SideDrawer = () => {
             ) : (
               <p>No search results found.</p>
             )}
+
+            {/* Display spinner while loading chat */}
             {loadingChat && <Spinner ml="auto" display="flex" />}
           </DrawerBody>
         </DrawerContent>
