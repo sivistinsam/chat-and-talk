@@ -2,7 +2,7 @@ import { CloseIcon } from "@chakra-ui/icons";
 import { Box } from "@chakra-ui/react";
 // import { Badge } from '@chakra-ui/layout';
 import React from "react";
-
+//For Notification making this Function
 const UserBadgeItem = ({ user, handleFunction, admin }) => {
   return (
     <Box
