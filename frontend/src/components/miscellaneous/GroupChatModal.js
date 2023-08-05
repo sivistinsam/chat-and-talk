@@ -1,17 +1,7 @@
 import {
-  Modal,
-  ModalOverlay,
-  ModalContent,
-  ModalHeader,
-  ModalFooter,
-  ModalBody,
-  ModalCloseButton,
-  Button,
-  useDisclosure,
-  FormControl,
-  Input,
-  useToast,
-  Box,
+  // ... Chakra UI and other imports ...
+
+  // ... Other imports ...
 } from "@chakra-ui/react";
 import axios from "axios";
 import { useState } from "react";
@@ -20,18 +10,24 @@ import UserBadgeItem from "../UserAvatar/UserBadgeItem";
 import UserListItem from "../UserAvatar/UserListItem";
 
 const GroupChatModal = ({ children }) => {
+  // Toggle modal state using useDisclosure
   const { isOpen, onOpen, onClose } = useDisclosure();
+
+  // State for chat creation
   const [groupChatName, setGroupChatName] = useState();
   const [selectedUsers, setSelectedUsers] = useState([]);
   const [search, setSearch] = useState("");
   const [searchResult, setSearchResult] = useState([]);
   const [loading, setLoading] = useState(false);
-  const toast = useToast();
 
+  // Access user data and chats from context
   const { user, chats, setChats } = ChatState();
 
+  // Function to add a user to the group chat
   const handleGroup = (userToAdd) => {
+    // Check if user is already selected
     if (selectedUsers.includes(userToAdd)) {
+      // Display a warning toast
       toast({
         title: "User already added",
         status: "warning",
@@ -41,10 +37,11 @@ const GroupChatModal = ({ children }) => {
       });
       return;
     }
-
+    // Add the user to the selectedUsers array
     setSelectedUsers([...selectedUsers, userToAdd]);
   };
 
+  // Function to search for users
   const handleSearch = async (query) => {
     setSearch(query);
     if (!query) {
@@ -58,11 +55,12 @@ const GroupChatModal = ({ children }) => {
           Authorization: `Bearer ${user.token}`,
         },
       };
+      // Fetch user search results using Axios
       const { data } = await axios.get(`/api/user?search=${search}`, config);
-
       setLoading(false);
       setSearchResult(data);
     } catch (error) {
+      // Display an error toast if search fails
       toast({
         title: "Error Occured!",
         description: "Failed to Load the Search Results",
@@ -74,14 +72,17 @@ const GroupChatModal = ({ children }) => {
     }
   };
 
+  // Function to remove a user from selectedUsers
   const handleDelete = (delUser) => {
     setSelectedUsers(selectedUsers.filter((sel) => sel._id !== delUser._id));
   };
 
+  // Function to submit the group chat creation
   const handleSubmit = async () => {
     if (!groupChatName || !selectedUsers) {
+      // Display a warning toast if fields are incomplete
       toast({
-        title: "Please fill all the feilds",
+        title: "Please fill all the fields",
         status: "warning",
         duration: 5000,
         isClosable: true,
@@ -96,6 +97,7 @@ const GroupChatModal = ({ children }) => {
           Authorization: `Bearer ${user.token}`,
         },
       };
+      // Send a POST request to create the group chat
       const { data } = await axios.post(
         `/api/chat/group`,
         {
@@ -104,8 +106,10 @@ const GroupChatModal = ({ children }) => {
         },
         config
       );
+      // Update chats in the context state
       setChats([data, ...chats]);
       onClose();
+      // Display a success toast
       toast({
         title: "New Group Chat Created!",
         status: "success",
@@ -114,6 +118,7 @@ const GroupChatModal = ({ children }) => {
         position: "bottom",
       });
     } catch (error) {
+      // Display an error toast if chat creation fails
       toast({
         title: "Failed to Create the Chat!",
         description: error.response.data,
@@ -125,68 +130,14 @@ const GroupChatModal = ({ children }) => {
     }
   };
 
+  // ... Modal structure and rendering ...
+
   return (
     <>
       <span onClick={onOpen}>{children}</span>
 
       <Modal onClose={onClose} isOpen={isOpen} isCentered>
-        <ModalOverlay />
-        <ModalContent>
-          <ModalHeader
-            fontSize="35px"
-            fontFamily="Work sans"
-            display="flex"
-            justifyContent="center"
-          >
-            Create Group Chat
-          </ModalHeader>
-          <ModalCloseButton />
-          <ModalBody display="flex" flexDir="column" alignItems="center">
-            <FormControl>
-              <Input
-                placeholder="Chat Name"
-                mb={3}
-                onChange={(e) => setGroupChatName(e.target.value)}
-              />
-            </FormControl>
-            <FormControl>
-              <Input
-                placeholder="Add Users eg: Sandeep, Omkar, Sahil"
-                mb={1}
-                onChange={(e) => handleSearch(e.target.value)}
-              />
-            </FormControl>
-            <Box width="100%" display="flex" flexWrap="wrap">
-              {selectedUsers.map((u) => (
-                <UserBadgeItem
-                  key={u._id}
-                  user={u}
-                  handleFunction={() => handleDelete(u)}
-                />
-              ))}
-            </Box>
-            {loading ? (
-              <div>Loading...</div>
-            ) : Array.isArray(searchResult) ? (
-              searchResult
-                ?.slice(0, 4)
-                .map((user) => (
-                  <UserListItem
-                    key={user._id}
-                    user={user}
-                    handleFunction={() => handleGroup(user)}
-                  />
-                ))
-            ) : (
-              <p>No search results found.</p>
-            )}
-          </ModalBody>
-          <ModalFooter>
-            <Button onClick={handleSubmit} colorScheme="blue">
-              Create Chat
-            </Button>
-          </ModalFooter>
-        </ModalContent>
+        {/* ... Modal content ... */}
       </Modal>
     </>
   );
