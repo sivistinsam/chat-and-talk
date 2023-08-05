@@ -13,6 +13,7 @@ import axios from "axios";
 import { useHistory } from "react-router-dom";
 
 const Signup = () => {
+  // State variables for password visibility, user details, and loading state.
   const [show, setShow] = useState(false);
   const [name, setName] = useState();
   const [email, setEmail] = useState();
@@ -20,13 +21,18 @@ const Signup = () => {
   const [confirmpassword, setConfirmpassword] = useState();
   const [pic, setPic] = useState();
   const [loading, setLoading] = useState(false);
+
+  // Accessing the toast hook from Chakra UI.
   const toast = useToast();
   const history = useHistory();
   const handleClick = () => setShow(!show);
 
+  // Function to handle form submission for registration.
   const submitHandler = async () => {
     setLoading(true);
+    // Validation checks for form fields.
     if (!name || !email || !password || !confirmpassword) {
+      // Display a warning toast if fields are not filled.
       toast({
         title: "Please Fill all the fields.",
         status: "warning",
@@ -38,6 +44,7 @@ const Signup = () => {
       return;
     }
     if (password !== confirmpassword) {
+      // Display a warning toast if passwords do not match.
       toast({
         title: "Password Do Not Match",
         status: "warning",
@@ -45,6 +52,7 @@ const Signup = () => {
         isClosable: true,
         position: "bottom",
       });
+      setLoading(false);
       return;
     }
     try {
@@ -53,25 +61,31 @@ const Signup = () => {
           "Content-type": "application/json",
         },
       };
+      // Making a POST request to the registration endpoint.
       const { data } = await axios.post(
         "/api/user",
         { name, email, password, pic },
         config
       );
+
+      // Display a success toast on successful registration.
       toast({
-        title: "Registeration Successful",
+        title: "Registration Successful",
         status: "success",
         duration: 5000,
         isClosable: true,
         position: "bottom",
       });
+
+      // Storing user info in local storage and redirecting to the chats page.
       localStorage.setItem("userInfo", JSON.stringify(data));
       setLoading(false);
       history.push("/chats");
       window.location.reload();
     } catch (error) {
+      // Display an error toast on registration failure.
       toast({
-        title: "Error Occured!",
+        title: "Error Occurred!",
         description: error.response.data.message,
         status: "error",
         duration: 5000,
@@ -80,11 +94,13 @@ const Signup = () => {
       });
       setLoading(false);
     }
-   
   };
+
+  // Function to upload user profile picture to Cloudinary.
   const postDetails = (pics) => {
     setLoading(true);
     if (pics === undefined) {
+      // Display a warning toast if no image is selected.
       toast({
         title: "Please Select an Image!.",
         status: "warning",
@@ -92,8 +108,11 @@ const Signup = () => {
         isClosable: true,
         position: "bottom",
       });
+      setLoading(false);
       return;
     }
+
+    // Validate the selected image format.
     if (
       pics.type === "image/jpg" ||
       pics.type === "image/png" ||
@@ -103,6 +122,8 @@ const Signup = () => {
       data.append("file", pics);
       data.append("upload_preset", "chat and talk");
       data.append("cloud_name", "dshj9acnm");
+
+      // Upload image to Cloudinary.
       fetch("https://api.cloudinary.com/v1_1/dshj9acnm/image/upload", {
         method: "POST",
         body: data,
@@ -122,6 +143,7 @@ const Signup = () => {
           setLoading(false);
         });
     } else {
+      // Display a warning toast if the selected image format is not supported.
       toast({
         title: "Please Select an Image!.",
         status: "warning",
@@ -135,12 +157,13 @@ const Signup = () => {
     window.location.reload();
   };
 
+  // Rendering the registration form.
   return (
     <VStack spacing="5px">
       <FormControl id="first-name" isRequired>
         <FormLabel>Name</FormLabel>
         <Input
-          placeholer="Enter your name"
+          placeholder="Enter your name"
           onChange={(e) => setName(e.target.value)}
         />
       </FormControl>
@@ -148,7 +171,7 @@ const Signup = () => {
         <FormLabel>Email</FormLabel>
         <Input
           type="email"
-          placeholer="Enter your name"
+          placeholder="Enter your email"
           onChange={(e) => setEmail(e.target.value)}
         />
       </FormControl>
@@ -157,7 +180,7 @@ const Signup = () => {
         <InputGroup size="md">
           <Input
             type={show ? "text" : "password"}
-            placeholer="Enter your Password"
+            placeholder="Enter your password"
             onChange={(e) => setPassword(e.target.value)}
           />
           <InputRightElement width="4.5rem">
@@ -168,12 +191,12 @@ const Signup = () => {
         </InputGroup>
       </FormControl>
 
-      <FormControl id="password" isRequired>
+      <FormControl id="confirm-password" isRequired>
         <FormLabel>Confirm Password</FormLabel>
         <InputGroup size="md">
           <Input
             type={show ? "text" : "password"}
-            placeholer="Confirm Password"
+            placeholder="Confirm Password"
             onChange={(e) => setConfirmpassword(e.target.value)}
           />
           <InputRightElement width="4.5rem">
