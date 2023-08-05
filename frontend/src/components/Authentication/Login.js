@@ -13,21 +13,31 @@ import axios from "axios";
 import { useHistory } from "react-router-dom";
 import { ChatState } from "../../Context/ChatProvider";
 
+// Login component
 const Login = () => {
+  // State variables for password visibility, email, password, and loading state.
   const [show, setShow] = useState(false);
   const [email, setEmail] = useState();
   const [password, setPassword] = useState();
   const [loading, setLoading] = useState(false);
 
+  // Function to toggle password visibility.
   const handleClick = () => setShow(!show);
 
+  // Accessing the toast hook from Chakra UI.
   const toast = useToast();
+
+  // Accessing the browser's history object using useHistory.
   const history = useHistory();
+
+  // Accessing the user state variable from the context.
   const { setUser } = ChatState();
 
+  // Function to handle form submission.
   const submitHandler = async () => {
     setLoading(true);
     if (!email || !password) {
+      // Displaying a warning toast if fields are not filled.
       toast({
         title: "Please Fill all the Fields",
         status: "warning",
@@ -39,16 +49,21 @@ const Login = () => {
       return;
     }
     try {
+      // Setting up headers for the POST request.
       const config = {
         headers: {
           "Content-type": "application/json",
         },
       };
+
+      // Making a POST request to the login endpoint.
       const { data } = await axios.post(
         "/api/user/login",
         { email, password },
         config
       );
+
+      // Displaying a success toast on successful login.
       toast({
         title: "Login Successful",
         status: "success",
@@ -56,13 +71,18 @@ const Login = () => {
         isClosable: true,
         position: "bottom",
       });
+
+      // Setting the user context state and storing user info in local storage.
       setUser(data);
       localStorage.setItem("userInfo", JSON.stringify(data));
       setLoading(false);
+
+      // Redirecting to the chats page.
       history.push("/chats");
     } catch (error) {
+      // Displaying an error toast on login failure.
       toast({
-        title: "Error Occured!",
+        title: "Error Occurred!",
         description: error.response.data.message,
         status: "error",
         duration: 5000,
@@ -71,8 +91,11 @@ const Login = () => {
       });
       setLoading(false);
     }
-    window.location.reload(); 
+    // Reloading the window to ensure the updated user info is used throughout the app.
+    window.location.reload();
   };
+
+  // Rendering the login form.
   return (
     <VStack spacing="5px">
       <FormControl id="email" isRequired>
@@ -101,6 +124,7 @@ const Login = () => {
         </InputGroup>
       </FormControl>
 
+      {/* Login button */}
       <Button
         colorScheme="blue"
         width="100%"
@@ -110,6 +134,8 @@ const Login = () => {
       >
         Log In
       </Button>
+
+      {/* Guest user button */}
       <Button
         variant="solid"
         colorScheme="red"
