@@ -17,13 +17,13 @@ import axios from "axios";
 import "./styles.css";
 import ScrollableChat from "./ScrollableChat";
 import io from "socket.io-client";
-// import Lottie from "react-lottie";
-// import animationData from "../animations/typing.json";
 
+// Define the socket endpoint
 const ENDPOINT = "https://chat-and-talk.onrender.com";
-var socket, selectedChatCompare;
+let socket, selectedChatCompare;
 
 const SingleChat = ({ fetchAgain, setFetchAgain }) => {
+  // State to manage messages, loading state, new messages, and typing
   const [messages, setMessages] = useState([]);
   const [loading, setLoading] = useState(false);
   const [newMessage, setNewMessage] = useState("");
@@ -33,15 +33,42 @@ const SingleChat = ({ fetchAgain, setFetchAgain }) => {
   const [typing, setTyping] = useState(false);
   const [isTyping, setIsTyping] = useState(false);
   const toast = useToast();
-  // const defaultOptions = {
-  //   loop: true,
-  //   autoplay: true,
-  //   animationData: animationData,
-  //   rendererSettings: {
-  //     preserveAspectRatio: "xMidYMid slice",
-  //   },
-  // };
 
+  // Establish socket connection and setup listeners
+  useEffect(() => {
+    socket = io(ENDPOINT);
+    socket.emit("setup", user);
+    socket.on("connected", () => setSocketConnected(true));
+    socket.on("typing", () => setIsTyping(true));
+    socket.on("stop typing", () => setIsTyping(false));
+    // eslint-disable-next-line
+  }, []);
+
+  // Fetch messages when selected chat changes
+  useEffect(() => {
+    fetchMessages();
+    selectedChatCompare = selectedChat;
+    // eslint-disable-next-line
+  }, [selectedChat]);
+
+  // Listen for incoming messages
+  useEffect(() => {
+    socket.on("message received", (newMessageReceived) => {
+      if (
+        !selectedChatCompare ||
+        selectedChatCompare._id !== newMessageReceived.chat._id
+      ) {
+        if (!notification.includes(newMessageReceived)) {
+          setNotification([newMessageReceived, ...notification]);
+          setFetchAgain(!fetchAgain);
+        }
+      } else {
+        setMessages([...messages, newMessageReceived]);
+      }
+    });
+  });
+
+  // Fetch messages from the server
   const fetchMessages = async () => {
     if (!selectedChat) return;
     try {
@@ -71,37 +98,7 @@ const SingleChat = ({ fetchAgain, setFetchAgain }) => {
     }
   };
 
-  useEffect(() => {
-    socket = io(ENDPOINT);
-    socket.emit("setup", user);
-    socket.on("connected", () => setSocketConnected(true));
-    socket.on("typing", () => setIsTyping(true));
-    socket.on("stop typing", () => setIsTyping(false));
-    // eslint-disable-next-line
-  }, []);
-
-  useEffect(() => {
-    fetchMessages();
-    selectedChatCompare = selectedChat;
-    // eslint-disable-next-line
-  }, [selectedChat]);
-
-  useEffect(() => {
-    socket.on("message received", (newMessageReceived) => {
-      if (
-        !selectedChatCompare ||
-        selectedChatCompare._id !== newMessageReceived.chat._id
-      ) {
-        if (!notification.includes(newMessageReceived)) {
-          setNotification([newMessageReceived, ...notification]);
-          setFetchAgain(!fetchAgain);
-        }
-      } else {
-        setMessages([...messages, newMessageReceived]);
-      }
-    });
-  });
-
+  // Send a new message via socket
   const sendMessage = async (event) => {
     if (event.key === "Enter" && newMessage) {
       socket.emit("stop typing", selectedChat._id);
@@ -138,6 +135,7 @@ const SingleChat = ({ fetchAgain, setFetchAgain }) => {
     }
   };
 
+  // Handle typing event
   const typingHandler = (e) => {
     setNewMessage(e.target.value);
     // Typing Indicator Logic
@@ -159,9 +157,11 @@ const SingleChat = ({ fetchAgain, setFetchAgain }) => {
       }
     }, timerLength);
   };
+
   return (
     <>
       {selectedChat ? (
+        // Display chat content if a chat is selected
         <>
           <Text
             fontSize={{ base: "28px", md: "30px" }}
@@ -209,6 +209,7 @@ const SingleChat = ({ fetchAgain, setFetchAgain }) => {
             overflow="hidden"
           >
             {loading ? (
+              // Display spinner while loading messages
               <Spinner
                 size="xl"
                 width={20}
@@ -228,14 +229,8 @@ const SingleChat = ({ fetchAgain, setFetchAgain }) => {
               mt={3}
             >
               {isTyping ? (
-                <div>
-                  {/* <Lottie
-                    options={defaultOptions}
-                    width={70}
-                    style={{ marginBottom: 15, marginLeft: 0 }}
-                  /> */}
-                  Typing...
-                </div>
+                // Display typing indicator if someone is typing
+                <div>Typing...</div>
               ) : (
                 <></>
               )}
@@ -250,6 +245,7 @@ const SingleChat = ({ fetchAgain, setFetchAgain }) => {
           </Box>
         </>
       ) : (
+        // Display welcome message if no chat is selected
         <>
           <Box
             display="flex"
