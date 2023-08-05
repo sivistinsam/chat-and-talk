@@ -71,7 +71,6 @@ const Login = () => {
       });
       setLoading(false);
     }
-    window.location.reload();
   };
   return (
     <VStack spacing="5px">
