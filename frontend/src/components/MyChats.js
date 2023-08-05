@@ -11,6 +11,8 @@ import GroupChatModal from "./miscellaneous/GroupChatModal";
 import { Avatar } from "@chakra-ui/avatar";
 // import ProfileModal from "./miscellaneous/ProfileModal";
 
+
+// This MyChats Function will display all the fetched chats and users chat
 const MyChats = ({ fetchAgain }) => {
   const [loggedUser, setLoggedUser] = useState();
   const { user, setSelectedChat, chats, setChats, selectedChat } = ChatState();
